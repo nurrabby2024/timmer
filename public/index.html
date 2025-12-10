@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>TimerBox</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="TimerBox" />
+  <meta property="og:description" content="TimerBox is a micro time station: live clock, one-tap countdowns, and a simple stopwatch that fits cleanly inside Farcaster Mini Apps." />
+  <meta property="og:image" content="https://timerbox-miniapp.vercel.app/assets/hero.png" />
+  <meta property="og:url" content="https://timerbox-miniapp.vercel.app/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Farcaster Mini App embed -->
+  <meta
+    name="fc:miniapp"
+    content='{
+      "version":"1",
+      "imageUrl":"https://timerbox-miniapp.vercel.app/assets/embed-3x2.png",
+      "button":{
+        "title":"TimerBox",
+        "action":{
+          "type":"launch_frame",
+          "name":"TimerBox",
+          "url":"https://timerbox-miniapp.vercel.app/",
+          "splashImageUrl":"https://timerbox-miniapp.vercel.app/assets/splash.png",
+          "splashBackgroundColor":"#020617"
+        }
+      }
+    }'
+  />
+
+  <!-- Backward-compatible Frame meta -->
+  <meta
+    name="fc:frame"
+    content='{
+      "version":"1",
+      "imageUrl":"https://timerbox-miniapp.vercel.app/assets/embed-3x2.png",
+      "button":{
+        "title":"TimerBox",
+        "action":{
+          "type":"launch_frame",
+          "name":"TimerBox",
+          "url":"https://timerbox-miniapp.vercel.app/",
+          "splashImageUrl":"https://timerbox-miniapp.vercel.app/assets/splash.png",
+          "splashBackgroundColor":"#020617"
+        }
+      }
+    }'
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #020617, #020617 55%, #000000 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .card {
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 24px;
+      padding: 18px 16px 14px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 620px;
+    }
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .env-pill {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: #9ca3af;
+    }
+    .subtitle {
+      font-size: 0.82rem;
+      color: #9ca3af;
+    }
+    .clock-box {
+      background: radial-gradient(circle at top right, #111827, #020617);
+      border-radius: 18px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .clock-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+    }
+    .clock-time {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+    }
+    .clock-date {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    .two-cols {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .box {
+      background: #020617;
+      border-radius: 18px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 10px 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: #9ca3af;
+    }
+    .badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+    .timer-display {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+    }
+    .timer-small {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+    .row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .chip-btn {
+      flex: 1;
+      border-radius: 999px;
+      border: none;
+      padding: 5px 0;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.96);
+      color: #e5e7eb;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+    .chip-btn:active {
+      transform: translateY(1px) scale(0.97);
+    }
+    .ctrl-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .ctrl-btn {
+      flex: 1;
+      border-radius: 999px;
+      border: none;
+      padding: 6px 0;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .ctrl-btn.primary {
+      background: linear-gradient(135deg, #22c55e, #14b8a6);
+      color: #020617;
+      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.55);
+    }
+    .ctrl-btn.secondary {
+      background: rgba(15, 23, 42, 0.96);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+    .ctrl-btn.danger {
+      background: rgba(239, 68, 68, 0.12);
+      color: #fecaca;
+      border: 1px solid rgba(248, 113, 113, 0.5);
+    }
+    .progress-bar-wrap {
+      margin-top: 4px;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.96);
+      overflow: hidden;
+    }
+    .progress-bar-inner {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #0ea5e9);
+      transition: width 0.25s linear;
+    }
+    .footer-row {
+      font-size: 0.74rem;
+      color: #6b7280;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 4px;
+      border-top: 1px dashed rgba(55, 65, 81, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <header>
+      <div class="header-row">
+        <div class="title">TimerBox</div>
+        <div class="env-pill" id="env-label">web</div>
+      </div>
+      <p class="subtitle">A tiny clock, stopwatch and quick timers in one view.</p>
+    </header>
+
+    <section class="clock-box">
+      <div class="clock-label">Local time</div>
+      <div class="clock-time" id="clock-time">--:--:--</div>
+      <div class="clock-date" id="clock-date">Loading date…</div>
+    </section>
+
+    <section class="two-cols">
+      <section class="box" aria-label="Stopwatch">
+        <div class="box-header">
+          <span>Stopwatch</span>
+          <span class="badge" id="stopwatch-status">Idle</span>
+        </div>
+        <div class="timer-display" id="stopwatch-display">00:00.0</div>
+        <div class="timer-small" id="stopwatch-laps-label">No laps yet</div>
+        <div class="ctrl-row">
+          <button class="ctrl-btn primary" id="stopwatch-start-btn">Start</button>
+          <button class="ctrl-btn secondary" id="stopwatch-lap-btn">Lap</button>
+          <button class="ctrl-btn danger" id="stopwatch-reset-btn">Reset</button>
+        </div>
+      </section>
+
+      <section class="box" aria-label="Countdown timers">
+        <div class="box-header">
+          <span>Countdown</span>
+          <span class="badge" id="countdown-status">Idle</span>
+        </div>
+        <div class="timer-display" id="countdown-display">00:00</div>
+        <div class="timer-small" id="countdown-label">Tap a preset to start.</div>
+        <div class="row">
+          <button class="chip-btn" data-min="5">5 min</button>
+          <button class="chip-btn" data-min="10">10 min</button>
+          <button class="chip-btn" data-min="25">25 min</button>
+        </div>
+        <div class="ctrl-row">
+          <button class="ctrl-btn secondary" id="countdown-pause-btn">Pause</button>
+          <button class="ctrl-btn danger" id="countdown-cancel-btn">Cancel</button>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-inner" id="countdown-progress"></div>
+        </div>
+      </section>
+    </section>
+
+    <footer class="footer-row">
+      <span id="footer-hint">Tip: Use 25 min as a focus block.</span>
+      <span id="footer-mode">Mode: web</span>
+    </footer>
+  </main>
+
+  <script src="/timerbox-ui.js"></script>
+  <script type="module" src="/script.js"></script>
+</body>
+</html>
