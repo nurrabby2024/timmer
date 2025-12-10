@@ -1,0 +1,32 @@
+{
+  "accountAssociation": {
+    "header": "TODO_REPLACE_WITH_BASE64_HEADER",
+    "payload": "TODO_REPLACE_WITH_BASE64_PAYLOAD",
+    "signature": "TODO_REPLACE_WITH_BASE64_SIGNATURE"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "TimerBox",
+    "homeUrl": "https://timerbox-miniapp.vercel.app/",
+    "iconUrl": "https://timerbox-miniapp.vercel.app/assets/icon.png",
+    "splashImageUrl": "https://timerbox-miniapp.vercel.app/assets/splash.png",
+    "splashBackgroundColor": "#020617",
+    "subtitle": "A tiny clock, stopwatch and quick timers in one view.",
+    "description": "TimerBox is a micro time station: live clock, one-tap countdowns, and a simple stopwatch that fits cleanly inside Farcaster Mini Apps.",
+    "primaryCategory": "utilities",
+    "tags": [
+      "timer",
+      "stopwatch",
+      "clock"
+    ],
+    "heroImageUrl": "https://timerbox-miniapp.vercel.app/assets/hero.png",
+    "tagline": "A tiny clock, stopwatch and quick timers in one view.",
+    "ogTitle": "TimerBox",
+    "ogDescription": "TimerBox is a micro time station: live clock, one-tap countdowns, and a simple stopwatch that fits cleanly inside Farcaster Mini Apps.",
+    "ogImageUrl": "https://timerbox-miniapp.vercel.app/assets/hero.png",
+    "screenshotUrls": [
+      "https://timerbox-miniapp.vercel.app/assets/screenshot-1.png"
+    ],
+    "noindex": true
+  }
+}
